@@ -46,14 +46,20 @@ module ShopifyApp
       @login_url || File.join(@root_url, 'login')
     end
 
-    def session_repository=(klass)
+    def session_repository=(klass_or_proc)
+      @session_repository = klass_or_proc.is_a?(Proc) ? klass_or_proc : -> { klass_or_proc }
+
       if Rails.configuration.cache_classes
-        ShopifyApp::SessionRepository.storage = klass
+        ShopifyApp::SessionRepository.storage = @session_repository.call
       else
         ActiveSupport::Reloader.to_prepare do
-          ShopifyApp::SessionRepository.storage = klass
+          ShopifyApp::SessionRepository.storage = @session_repository.call
         end
       end
+    end
+
+    def session_repository
+      @session_repository&.call
     end
 
     def has_webhooks?

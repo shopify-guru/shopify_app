@@ -117,4 +117,19 @@ class ConfigurationTest < ActiveSupport::TestCase
     assert_equal "Shopify::Webhooks::TestJob", ShopifyApp::WebhooksController.new.send(:webhook_job_klass_name, 'test')
   end
 
+  test "can set session_repository to a class" do
+    ShopifyApp.configure do |config|
+      config.session_repository = ShopifyApp::InMemorySessionStore
+    end
+
+    assert_equal ShopifyApp::InMemorySessionStore, ShopifyApp.configuration.session_repository
+  end
+
+  test "can set session_repository to a proc" do
+    ShopifyApp.configure do |config|
+      config.session_repository = -> { ShopifyApp::InMemorySessionStore }
+    end
+
+    assert_equal ShopifyApp::InMemorySessionStore, ShopifyApp.configuration.session_repository
+  end
 end
