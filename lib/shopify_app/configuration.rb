@@ -47,6 +47,7 @@ module ShopifyApp
     end
 
     def session_repository=(klass)
+      @session_repository = klass
       ShopifyApp::SessionRepository.storage = klass
     end
 
